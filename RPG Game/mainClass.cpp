@@ -1,4 +1,4 @@
-#include "BaseClass.h"
+#include "mainClass.h"
 
 string Npc::GetName()
 {
