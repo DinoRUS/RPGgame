@@ -1,108 +1,77 @@
-
 #include "gameClasses.h"
-bool Warrior::Save() 
+
+string Npc::GetName()
+{
+    return name;
+}
+unsigned int Npc::GetHealth()
+{
+    return health;
+}
+float Npc::GetDamage()
+{
+    return damage;
+}
+unsigned int Npc::GetLvl()
+{
+    return lvl;
+}
+void Npc::GetInfo() //метод класса
+{
+    cout << "Имя - " << name << endl;
+    cout << "Здоровье - " << health << endl;
+    cout << "Урон - " << damage << endl;
+}
+bool Npc::Save()
 {
 
-
-    if (Npc::Save())
+    ofstream saveSystem("save.bin", ios::binary);
+    if (saveSystem.is_open())
     {
-        ofstream saveSystem("save.bin", ios::binary);
-        if (saveSystem.is_open())
-        {
-
-            saveSystem.write(reinterpret_cast<const char*>(&strenght), sizeof(strenght));
-            for (int i = 0; i < 4; i++)
-            {
-                saveSystem.write(reinterpret_cast<const char*>(&weapons[i]), sizeof(weapons[i]));
-            }
-            saveSystem.close();
-            return true;
-        }
-        else
-        {
-            cout << "сохранение не удалось" << endl;
-            return false;
-        }
+        saveSystem.write(reinterpret_cast<const char*>(&name), sizeof(name));
+        saveSystem.write(reinterpret_cast<const char*>(&health), sizeof(health));
+        saveSystem.write(reinterpret_cast<const char*>(&damage), sizeof(damage));
+        saveSystem.write(reinterpret_cast<const char*>(&lvl), sizeof(lvl));
+        saveSystem.close();
+        return true;
     }
+    else
+    {
+        cout << "сохранение не удалось" << endl;
+        return false;
+    }
+    saveSystem.close();
 };
-Warrior Warrior::Load()
+Npc Npc::Load()
 {
     ifstream loadSystem("save.bin", ios::binary);
-    Warrior warrior; //временное хранилище для считывания данных из файла
-    warrior = Npc::Load();
+    Npc npc; //временное хранилище для считывания данных из файла
     if (loadSystem.is_open())
     {
-        loadSystem.read(reinterpret_cast<char*>(&strenght), sizeof(strenght));
-        for (int i = 0; i < 4; i++)
-        {
-            loadSystem.read(reinterpret_cast<char*>(&weapons[i]), sizeof(weapons[i]));
-        }
+        loadSystem.read(reinterpret_cast<char*>(&npc.name), sizeof(npc.name));
+        loadSystem.read(reinterpret_cast<char*>(&npc.health), sizeof(npc.health));
+        loadSystem.read(reinterpret_cast<char*>(&npc.damage), sizeof(npc.damage));
+        loadSystem.read(reinterpret_cast<char*>(&npc.lvl), sizeof(npc.lvl));
     }
     else
     {
         cout << "связь с базой нарушена\nПамять утерена" << endl;
-        return warrior;
+        return npc;
     }
     loadSystem.close();
-    return warrior;
+    return npc;
 
 
 };
-
-
-Warrior::Warrior() //конструктор по умолчанию, когда нет аргументов
+void Player::Create(Npc* player)
 {
-    name = "воин";
-    health = 35;
-    damage = 10;
+    player->Create();
 }
-//кастомный конструктор
-Warrior::Warrior(string name, unsigned int health, float damage)
+void Player::Save(Npc* player)
 {
-    cout << "кастомный конструктор война" << endl;
-    this->name = name;
-    this->health = health;
-    this->damage = damage;
+    player->Save();
 }
-
-void Warrior::GetWeapons()
+void Player::Load(Npc* player)
 {
-    cout << name << " взял в руки " << weapons[lvl - 1];
-}
-void Warrior::GetInfo()   //полиморфизм (перегрузка для метода)
-{
-    Npc::GetInfo();
-    cout << "Сила - " << strenght << endl;
-    cout << "Доступное оружие - ";
-    for (int i = 0; i < lvl; i++)
-    {
-        cout << weapons[i] << endl;
-    }
-}
-void Warrior::Create() 
-{
-    cout << "Вы создали война" << endl;
-    cout << "Введите имя персонажа\t";
-    cin >> name;
-    GetInfo();
-    GetWeapons();
-}
-bool Warrior::operator == (const Warrior& warrior) const
-{
-    return ((warrior.damage == this->damage) && (warrior.health == this->health)
-        && (warrior.strenght == this->strenght));
-}
-void Warrior::operator = (Npc npc)
-{
-    this->name = npc.GetName();
-    this->name = npc.GetHealth();
-    this->name = npc.GetDamage();
-    this->name = npc.GetLvl();
-}
-
-//деструктор - метод, который вызывается автоматически при высвобождении памяти
-//при окончании работы с экземпляром класса (нельзя вызвать вручную)
-Warrior::~Warrior() //деструктор всегда без аргументов
-{
-    cout << name << " пал смертью храбрых" << endl;
+    player->Load();
 }
