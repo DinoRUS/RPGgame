@@ -1,31 +1,28 @@
-#pragma once
-#include "mainClass.h"
+#include "BaseClass.h"
 
-Npc::Npc string GetName()
+string Npc::GetName()
 {
     return name;
 }
-unsigned int GetHealth()
+unsigned int Npc::GetHealth()
 {
     return health;
 }
-float GetDamage()
+float Npc::GetDamage()
 {
     return damage;
 }
-unsigned int GetLvl()
+unsigned int Npc::GetLvl()
 {
     return lvl;
 }
-virtual void GetInfo() //метод класса
+void Npc::GetInfo() //метод класса
 {
     cout << "Имя - " << name << endl;
     cout << "Здоровье - " << health << endl;
     cout << "Урон - " << damage << endl;
 }
-
-virtual void Create() {};
-virtual bool Save()
+bool Npc::Save()
 {
 
     ofstream saveSystem("save.bin", ios::binary);
@@ -45,7 +42,7 @@ virtual bool Save()
     }
     saveSystem.close();
 };
-Npc Load()
+Npc Npc::Load()
 {
     ifstream loadSystem("save.bin", ios::binary);
     Npc npc; //временное хранилище для считывания данных из файла
@@ -64,3 +61,17 @@ Npc Load()
     loadSystem.close();
     return npc;
 
+
+};
+void Player::Create(Npc* player)
+{
+    player->Create();
+}
+void Player::Save(Npc* player)
+{
+    player->Save();
+}
+void Player::Load(Npc* player)
+{
+    player->Load();
+}
