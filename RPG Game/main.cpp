@@ -1,8 +1,8 @@
 #include <iostream>
 #include "windows.h"
-#include "gameClasses.h"
-#include "mainClass.h"
-#include "Evil.h" 
+#include "gameClass.h"
+#include "mainClasses.h"
+#include "Evil.h"
 
 using namespace std;
 
@@ -21,7 +21,7 @@ using namespace std;
 
 int main()
 {
-    setlocale(LC_ALL, "Rus");
+    setlocale(LC_ALL, ".UTF-8");
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
 
@@ -36,13 +36,30 @@ int main()
     cout << "Привет, путник\nПрисядь у костра и расскажи о себе\n";
     cout << "Ты впервые тут? (1 - новый персонаж, 2 - загрузить)\n";
     unsigned short choise = 1;
-    //создать уникальную функцию для проверки условия выбора
     cin >> choise;
     while (choise > 2 || choise < 1)
     {
         cout << "Наверное ты ошибся, повтори снова\n";
         cin >> choise;
     }
+    /*
+    unsigned short maxChoise = 3;
+    unsigned short TestChoise(unsigned short maxChoise, string text);
+    {
+        unsigned short choise = 1;
+        cin >> choise;
+        while (choise > maxChoise || choise < 1)
+        {
+            cout << "Наверное ты ошибся, повтори снова\n";
+            cin >> choise;
+        }
+        return choise;
+
+       
+    };
+
+    */
+    
     if (choise == 1)
     {
         cout << "Расскажи о своих навыках\n\t1 - Воин\n\t2 - Волшебник\n\t3 - Паладин\n";
