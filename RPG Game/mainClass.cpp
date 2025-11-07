@@ -1,4 +1,4 @@
-#include "gameClasses.h"
+#include "mainClass.h"
 
 string Npc::GetName()
 {
