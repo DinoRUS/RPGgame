@@ -1,5 +1,5 @@
-#include "mainClass.h"
-bool Warrior::Save() 
+#include "gameClasses.h"
+bool Warrior::Save()
 {
 
 
@@ -78,7 +78,7 @@ void Warrior::GetInfo()   //полиморфизм (перегрузка для 
         cout << weapons[i] << endl;
     }
 }
-void Warrior::Create() 
+void Warrior::Create()
 {
     cout << "Вы создали война" << endl;
     cout << "Введите имя персонажа\t";
