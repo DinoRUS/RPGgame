@@ -11,24 +11,93 @@ protected:  //модификатор 0 (приватный - защищенны�
 public:
     //конструктор - метод, который вызывается в момент создания экземпляра
     //класса (вручную вызвать в основном потоке программы не можем)
-    bool Save() override;
-    Warrior Load();
     Warrior();//конструктор по умолчанию, когда нет аргументов
-              //кастомный конструктор
+    //кастомный конструктор
     Warrior(string name, unsigned int health, float damage);
 
-    void GetWeapons();
-    void GetInfo() override;  //полиморфизм (перегрузка для метода)
-    void Create() override;
-    
+    void GetWeapons() 
+    {
+
+    };
+    void GetInfo() override 
+    {
+
+    };  //полиморфизм (перегрузка для метода)
+    void Create() override 
+    {
+
+    };
+
     //перегрузка операторов
     //перегрузка оператора сравнения (==)
 
-    bool operator == (const Warrior& warrior) const;
-        void operator = (Npc npc);
- 
-        ~Warrior(); //деструктор всегда без аргументов
-    
+    bool operator == (const Warrior& warrior) const{
+        return (wairror.damage == this->damage) &&
+               (wairror.health == this->health) &&
+               (wairror.strength == this->strength);
+    }
+
+    Warrior& operator = (const Npc& npc)
+    {
+
+
+        if (this != &npc)
+        {
+            this->name = npc.GetName();
+            this->health = npc.GetHeatlh();
+            this->damage = npc.GetDamage();
+            this->lvl = npc.GetLvl();
+            return *this;
+        }
+    }
+    void operator = (Npc npc);
+    bool Save() override 
+    {
+        ofstream saveSystem("save.bin", ios::binary);
+        if (saveSystem.is_open())
+        {
+            if (!Npc::Save())
+            {
+                cout << "Сохранение не удалось\nПопробуйте позже\n";
+                return false;
+            }
+
+            saveSystem.write(reinterpret_cast<const char*>(&strenght), sizeof(strenght));
+            saveSystem.close();
+            return true;
+        }
+        else
+        {
+            cout << "Сохранение не удалось\nПопробуйте позже\n";
+            return false;
+        }
+    }
+    bool Load() override
+    {
+        ifstream loadSsystem("save.bin", ios::binary);
+        if (loadSystem.is_open())
+        {
+            if (!Npc::Load())
+            {
+                cout << "Связь с небесами нарушена\nПамять о ваших прошлых путешествиях повреждена\n";
+                return false;
+            }
+            loadSystem.read(reinterpret_cast<char*>(&strenght), sizeof(strenght))
+        }
+        else
+        {
+            cout << "Связь с небесами нарушена\nПамять о ваших прошлых путешествиях повреждена\n";
+            return false;
+        }
+        loadSystem.close();
+        return true;
+    };
+
+    ~Warrior() 
+    {
+
+    }; //деструктор всегда без аргументов
+
 };
 
 
