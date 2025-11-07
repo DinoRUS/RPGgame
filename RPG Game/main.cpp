@@ -6,7 +6,7 @@
 
 using namespace std;
 
-enum class ValueQuality 
+enum class ValueQuality
 {
     мусор, обычное, редкое, мифическое, легендарное
 };
@@ -30,32 +30,34 @@ struct Treasure // приват но по умл
         switch (quality)
         {
         case ValueQuality::мусор:
-                cout << "качесвто плохое\n";
-                break;
-        } 
+            cout << "качесвто плохое\n";
+            break;
+        }
         switch (quality)
         {
         case ValueQuality::обычное:
-                cout << "качество среднее\n";
-                break;
+            cout << "качество среднее\n";
+            break;
         }
         switch (quality)
         {
         case ValueQuality::редкое:
-                cout << "качество хорошее\n";
-                break;
+            cout << "качество хорошее\n";
+            break;
         }
         switch (quality)
         {
         case ValueQuality::мифическое:
-                cout << "качество отличное\n";
-                break;
+            cout << "качество отличное\n";
+            break;
         }
         switch (quality)
         {
         case ValueQuality::легендарное:
-                cout << "качество замечательное\n";
-                break;
+            cout << "качество замечательное\n";
+            break;
+        default:
+            break;
         }
     }
 };
@@ -89,9 +91,9 @@ int main()
     SetConsoleOutputCP(1251);
 
     /*Treasure treasure;
-    treasure.name = "древняя тарелка";     
-    treasure.price = 30;     
-    treasure.quality = treasure.valueQuality[3];     
+    treasure.name = "древняя тарелка";
+    treasure.price = 30;
+    treasure.quality = treasure.valueQuality[3];
     cout << treasure.name << '\n' << treasure.price << '\n' << treasure.quality << '\n';
 */
     Cloth cloth(ValueQuality::мифическое);
@@ -157,7 +159,8 @@ int main()
             wizard = nullptr;
             delete paladin;
             paladin = nullptr;
-            break; }
+            break;
+        }
         case 2: {
             player->Create(wizard);
             delete warrior;
@@ -165,14 +168,16 @@ int main()
             delete paladin;
             paladin = nullptr;
             cout << " " << endl;
-            break; }
+            break;
+        }
         case 3: {
             player->Create(paladin);
             delete warrior;
             warrior = nullptr;
             delete wizard;
             wizard = nullptr;
-            break; }
+            break;
+        }
         }
 
     }
