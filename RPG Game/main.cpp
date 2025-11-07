@@ -6,6 +6,10 @@
 
 using namespace std;
 
+enum class ValueQuality 
+{
+    мусор, обычное, редкое, мифическое, легендарное
+};
 //модификаторы доступа:
 // private - приватный, запрещает доступ к свойствам и классам
 //           за пределами самого класса
@@ -16,14 +20,86 @@ using namespace std;
 
 
 //базовый класс - абстрактный (класс у которого все методы виртуальные)
-
-
-
+struct Treasure // приват но по умл
+{
+    string name{ "добыча" };
+    ValueQuality quiality = ValueQuality::мифическое;
+    unsigned int price{ 0 };
+    Treasure(ValueQuality quality)
+    {
+        switch (quality)
+        {
+        case ValueQuality::мусор:
+                cout << "качесвто плохое\n";
+                break;
+        } 
+        switch (quality)
+        {
+        case ValueQuality::обычное:
+                cout << "качество среднее\n";
+                break;
+        }
+        switch (quality)
+        {
+        case ValueQuality::редкое:
+                cout << "качество хорошее\n";
+                break;
+        }
+        switch (quality)
+        {
+        case ValueQuality::мифическое:
+                cout << "качество отличное\n";
+                break;
+        }
+        switch (quality)
+        {
+        case ValueQuality::легендарное:
+                cout << "качество замечательное\n";
+                break;
+        }
+    }
+};
+struct Cloth : Treasure //
+{
+    Cloth(ValueQuality quality) : Treasure(quality) {};
+    string valueSite[5]{ "обувь","перчатки","шлем","нагрудник","пояс" };
+    string site{ NULL };
+    unsigned short armor{ 1 };
+};
+/*
+class Treasure // приват но по умл
+{
+public:
+    string name{ "добыча" };
+    string valueQuality[5]{ "мусор", "обычное", "редкое", "мифическое", "легендарное" };
+    string quality = valueQuality[0];
+    unsigned int price{ 0 };
+};
+class Cloth : Treasure //
+{
+    string valueSite[5]{ "обувь","перчатки","шлем","нагрудник","пояс" };
+    string site{ NULL };
+    unsigned short armor{ 1 };
+};
+*/
 int main()
 {
     setlocale(LC_ALL, ".UTF-8");
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
+
+    /*Treasure treasure;
+    treasure.name = "древняя тарелка";     
+    treasure.price = 30;     
+    treasure.quality = treasure.valueQuality[3];     
+    cout << treasure.name << '\n' << treasure.price << '\n' << treasure.quality << '\n';
+*/
+    Cloth cloth(ValueQuality::мифическое);
+    cloth.armor = 10;
+    cloth.site = cloth.valueSite[2];
+    cloth.name = "Шлем властителя подземелий";
+    cloth.price = 50;
+    cout << cloth.name << '\n' << cloth.valueSite << '\n' << cloth.armor << '\n' << cloth.price << '\n';
 
     Warrior* warrior = new Warrior();
     Warrior* warrior2 = new Warrior();
@@ -55,11 +131,11 @@ int main()
         }
         return choise;
 
-       
+
     };
 
     */
-    
+
     if (choise == 1)
     {
         cout << "Расскажи о своих навыках\n\t1 - Воин\n\t2 - Волшебник\n\t3 - Паладин\n";
