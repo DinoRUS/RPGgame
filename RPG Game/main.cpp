@@ -1,15 +1,64 @@
 #include <iostream>
-#include "windows.h"
 #include "gameClasses.h"
 #include "mainClass.h"
-#include "Evil.h"
+#include <Windows.h>
+#include "evil.h"
+#include <fstream>
+using namespace std; 
 
-using namespace std;
+unsigned short TestChoise(unsigned short maxChoise, string text)
+{
+    unsigned short choise = 1;
+    cin >> choise;
+    while (choise > maxChoise || choise < 1)
+    {
+        cout << text << endl;
+        cin >> choise;
+    }
+    return choise;
+};
+
+class Product
+{
+public: Product() = default;
+};
+
+class Bread : Product
+{
+public: Bread() = default;
+};
+
+class Chips : Product
+{
+public: Chips() = default;
+};
+
+class Creator
+{
+public: 
+    Creator() = default;
+    virtual Product FactoryMethod() { return Product(); };
+};
+
+class BreadCreator : Creator
+{
+public:
+    BreadCreator() = default;
+    Product FactoryMethod() override { return Bread(); };
+};
+
+class ChipsCreator : Creator
+{
+public: 
+    ChipsCreator() = default;
+    Product FactoryMethod() override { return Chips(); };
+};
 
 enum class ValueQuality
 {
     мусор, обычное, редкое, мифическое, легендарное
 };
+
 //модификаторы доступа:
 // private - приватный, запрещает доступ к свойствам и классам
 //           за пределами самого класса
@@ -17,8 +66,6 @@ enum class ValueQuality
 //        в классы наследники, но все еще нельзя использовать
 //        в основном потоке программы
 // public - публичный, общедоступный, можно использовать везде
-
-
 //базовый класс - абстрактный (класс у которого все методы виртуальные)
 struct Treasure // приват но по умл
 {
@@ -61,12 +108,59 @@ struct Treasure // приват но по умл
         }
     }
 };
+
 struct Cloth : Treasure //
 {
     Cloth(ValueQuality quality) : Treasure(quality) {};
     string valueSite[5]{ "обувь","перчатки","шлем","нагрудник","пояс" };
     string site{ NULL };
     unsigned short armor{ 1 };
+
+    Cloth cloth(ValueQuality::мифическое);
+    cloth.armor = 10;
+    cloth.site = cloth.valueSite[2];
+    cloth.name = "Шлем властителя подземелий";
+    cloth.price = 50;
+    cout << cloth.name << '\n' << cloth.valueSite << '\n' << cloth.armor << '\n' << cloth.price << '\n';
+};
+
+enum class CharacterType
+    {
+    UNKOWN = 0,
+    WARRIOR,
+    WIZZARD,
+    PALADIN
+    };
+enum class EnemyType
+    {
+
+    };
+
+unsigned short TestChoice(unsigned short maxChoice, string text)
+    {
+
+    }
+
+unique_ptr<Npc> CreateCharacter(CharacterType type)
+{
+    switch (type)
+    {
+    case CharacterType::UNKOWN:
+        return make_unique<Npc>();
+        break;
+    case CharacterType::WARRIOR:
+        return make_unique<Warrior>();
+        break;
+    case CharacterType::WIZZARD:
+        return make_unique<Wizard>();
+        break;
+    case CharacterType::PALADIN:
+        return make_unique<Paladin>();
+        break;
+    default:
+        invalid_argument("Неизвестный тип персонавжа");
+            break;
+    };
 };
 /*
 class Treasure // приват но по умл
@@ -86,22 +180,15 @@ class Cloth : Treasure //
 */
 int main()
 {
-    setlocale(LC_ALL, ".UTF-8");
+    setlocale(LC_ALL,"Rus")
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
-
     /*Treasure treasure;
     treasure.name = "древняя тарелка";
     treasure.price = 30;
     treasure.quality = treasure.valueQuality[3];
     cout << treasure.name << '\n' << treasure.price << '\n' << treasure.quality << '\n';
 */
-    Cloth cloth(ValueQuality::мифическое);
-    cloth.armor = 10;
-    cloth.site = cloth.valueSite[2];
-    cloth.name = "Шлем властителя подземелий";
-    cloth.price = 50;
-    cout << cloth.name << '\n' << cloth.valueSite << '\n' << cloth.armor << '\n' << cloth.price << '\n';
 
     Warrior* warrior = new Warrior();
     Warrior* warrior2 = new Warrior();
@@ -109,7 +196,8 @@ int main()
 
     Wizard* wizard = new Wizard();
     Paladin* paladin = new Paladin();
-    Player* player = new Player();
+    
+    Player* player = new Player()
 
     cout << "Привет, путник\nПрисядь у костра и расскажи о себе\n";
     cout << "Ты впервые тут? (1 - новый персонаж, 2 - загрузить)\n";
@@ -149,42 +237,28 @@ int main()
             cout << "Такого еще не было в наших краях\nНе мог бы ты повторить\n";
             cin >> choise;
         }
-
-
-        switch (choise)
+        if (TestChoise(2, "Наверное ты ошибся повтори снова"))
         {
-        case 1: {
-            player->Create(warrior);
-            delete wizard;
-            wizard = nullptr;
-            delete paladin;
-            paladin = nullptr;
-            break;
+            cout << "Расскажи о своих навыках\n\t1 - Воин\n\t2 - Волшебник\n\t3 - Паладине\n";
+            unique_ptr<Npc> character;
+            switch (TestChoice(3,"Такого не было в наших краях\nНе мог бы ты повторить"))
+            {
+            case 1:
+                character = CreateCharacter(CharacterType::WARRIOR);
+                break;
+            case 2:
+                character = CreateCharacter(CharacterType::WIZZARD);
+                break;
+            case 3:
+                character = CreateCharacter(CharacterType::PALADIN);
+                break;
+            }
+            player->Create(move(character));
         }
-        case 2: {
-            player->Create(wizard);
-            delete warrior;
-            warrior = nullptr;
-            delete paladin;
-            paladin = nullptr;
-            cout << " " << endl;
-            break;
-        }
-        case 3: {
-            player->Create(paladin);
-            delete warrior;
-            warrior = nullptr;
-            delete wizard;
-            wizard = nullptr;
-            break;
-        }
-        }
-
-    }
-
     else
     {
-        player->Load(warrior);
+            ifstream loadSystem("save.txt", ios::binary);
+
     }
 
     cout << "сделаем остановку тут?\n\t1 - сохранить игру\n\t2 - продолжить\n";
