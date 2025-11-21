@@ -1,4 +1,5 @@
 #include "gameClasses.h"
+#include <fstream>
 bool Warrior::Save()
 {
 
@@ -105,3 +106,30 @@ Warrior::~Warrior() //деструктор всегда без аргумент�
 {
     cout << name << " пал смертью храбрых" << endl;
 }
+
+void Paladin::Create()
+{
+    cout << "" <<
+}
+
+unsigned short Wizard::Spell:CastSpell()
+{
+    cout << "Вы применили " << name << " на противнике" << endl;
+    return damage;
+}
+
+void Wizard::GetInfo()
+{
+    Npc::GetInfo();
+    cout << "Интеллект - " << intellect << endl;
+    cout << "Доступные заклинания в книге заклинаний - ";
+    for (int i = 0; i < 5; i++)
+    {
+        cout << i + 1 << " заклинание:\n";
+        for (int j = 0; j < 5; j++)
+        {
+            cout << spells[i][j] << endl;
+        }
+        cout << endl;
+    }
+};
