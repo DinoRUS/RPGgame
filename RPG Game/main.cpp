@@ -1,7 +1,7 @@
 #include <iostream>
 #include "windows.h"
-#include "MainClass.h"
-#include "BasicClasses.h"
+#include "mainClass.h"
+#include "gameClasses.h"
 #include "Evil.h"
 
 using namespace std;
