@@ -1,21 +1,22 @@
-#pragma once
 #include "Evil.h"
 
-Evil::Evil(string name) {
+using namespace std;
+
+ThePriestess::ThePriestess(const std::string& name) {
     this->name = name;
     health = 10;
-    damage = 5;
+    damage = 5.0f;  
 }
 
-Evil::Evil(string name, int health) : Evil::Evil(name) {
+ThePriestess::ThePriestess(const std::string& name, unsigned int health) : ThePriestess(name) {
     this->health = health;
 }
 
-Evil::Evil(string name, int health, int damage) : Evil::Evil(name, health) {
-    this->damage = damage;
+ThePriestess::ThePriestess(const std::string& name, unsigned int health, float damage) : ThePriestess(name, health) {
+    this->damage = damage;  
 }
 
-void Evil::GetInfo() {
+void ThePriestess::GetInfo() {
     cout << endl;
     cout << "на вас напал " << name << endl;
     if (health >= 0 && damage < 0) {
