@@ -1,75 +1,71 @@
+
 #include "gameClasses.h"
-#include <fstream>
-bool Warrior::Save()
+
+bool Nemesis::Save()
 {
-
-
-    if (Npc::Save())
+    ofstream saveSystem("save.bin", ios::binary);
+    if (saveSystem.is_open())
     {
-        ofstream saveSystem("save.bin", ios::binary);
-        if (saveSystem.is_open())
+        if (Npc::Save())
         {
-
-            saveSystem.write(reinterpret_cast<const char*>(&strenght), sizeof(strenght));
-            for (int i = 0; i < 4; i++)
-            {
-                saveSystem.write(reinterpret_cast<const char*>(&weapons[i]), sizeof(weapons[i]));
-            }
-            saveSystem.close();
-            return true;
-        }
-        else
-        {
-            cout << "сохранение не удалось" << endl;
+            cout << "Сохранение не удалось" << endl;
             return false;
         }
-    }
-};
-Warrior Warrior::Load()
-{
-    ifstream loadSystem("save.bin", ios::binary);
-    Warrior warrior; //временное хранилище для считывания данных из файла
-    warrior = Npc::Load();
-    if (loadSystem.is_open())
-    {
-        loadSystem.read(reinterpret_cast<char*>(&strenght), sizeof(strenght));
-        for (int i = 0; i < 4; i++)
-        {
-            loadSystem.read(reinterpret_cast<char*>(&weapons[i]), sizeof(weapons[i]));
-        }
+        saveSystem.write(reinterpret_cast<const char*>(&strenght), sizeof(strenght));
+        saveSystem.close();
+        return true;
     }
     else
     {
-        cout << "связь с базой нарушена\nПамять утерена" << endl;
-        return warrior;
+        cout << "Сохранение не удалось" << endl;
+        return false;
+    }
+
+};
+bool Nemesis::Load()
+{
+    ifstream loadSystem("save.bin", ios::binary);
+
+    if (loadSystem.is_open())
+    {
+        if (!Npc::Load())
+        {
+            cout << "Биометрические данные не совпадают.\nЛичность не подтверждена" << endl;
+            return false;
+        }
+        loadSystem.read(reinterpret_cast<char*>(&strenght), sizeof(strenght));
+
+    }
+    else
+    {
+        cout << "Биометрические данные не совпадают.\nЛичность не подтверждена" << endl;
+        return false;
     }
     loadSystem.close();
-    return warrior;
+    return true;
 
 
 };
-
-
-Warrior::Warrior() //конструктор по умолчанию, когда нет аргументов
+Nemesis::Nemesis() //конструктор по умолчанию, когда нет аргументов
 {
-    name = "воин";
-    health = 35;
-    damage = 10;
+    name = "Немезис";
+    health = 1600;
+    damage = 250;
 }
-//кастомный конструктор
-Warrior::Warrior(string name, unsigned int health, float damage)
+
+Nemesis::Nemesis(string name, unsigned int health, float damage)
 {
-    cout << "кастомный конструктор война" << endl;
+    cout << "конструктор Немезиса" << endl;
     this->name = name;
     this->health = health;
     this->damage = damage;
 }
 
-void Warrior::GetWeapons()
+void Nemesis::GetWeapons()
 {
     cout << name << " взял в руки " << weapons[lvl - 1];
 }
-void Warrior::GetInfo()   //полиморфизм (перегрузка для метода)
+void Nemesis::GetInfo()   //полиморфизм (перегрузка для метода)
 {
     Npc::GetInfo();
     cout << "Сила - " << strenght << endl;
@@ -79,20 +75,140 @@ void Warrior::GetInfo()   //полиморфизм (перегрузка для 
         cout << weapons[i] << endl;
     }
 }
-void Warrior::Create()
+void Nemesis::Create()
 {
-    cout << "Вы создали война" << endl;
+    cout << "Вы создали немезиса" << endl;
     cout << "Введите имя персонажа\t";
     cin >> name;
     GetInfo();
     GetWeapons();
 }
-bool Warrior::operator == (const Warrior& warrior) const
+bool Nemesis::operator == (const Nemesis& nemesis) const
 {
-    return ((warrior.damage == this->damage) && (warrior.health == this->health)
-        && (warrior.strenght == this->strenght));
+    return (nemesis.damage == this->damage) &&
+        (nemesis.health == this->health) &&
+        (nemesis.strenght == this->strenght);
 }
-void Warrior::operator = (Npc npc)
+Nemesis& Nemesis::operator = (const Npc& npc)
+{
+    if (this != &npc)
+    {
+        this->name = npc.GetName();
+        this->health = npc.GetHealth();
+        this->damage = npc.GetDamage();
+        this->lvl = npc.GetLvl();
+        return *this;
+    }
+
+}
+
+Nemesis::~Nemesis()
+{
+    cout << name << "\nПоглощен Катастрофой" << endl;
+}
+
+TheCaster::Art::Art(string name, unsigned short damage,
+    unsigned short price, bool isCurse, int timeCast)
+    : name(name), damage(damage), price(price),
+    isCurse(isCurse), timeCast(timeCast)
+{
+}
+
+unsigned short Omega::Art::CastArt()
+{
+    return 0;
+}
+
+bool Omega::Save()
+{
+    ofstream saveSystem("save.bin", ios::binary);
+    if (saveSystem.is_open())
+    {
+        if (!Npc::Save())
+        {
+            cout << "Сохранение не удалось" << endl;
+            return false;
+        }
+        saveSystem.write(reinterpret_cast<const char*>(&intellect), sizeof(intellect));
+        saveSystem.close();
+        return true;
+    }
+    else
+    {
+        cout << "Сохранение не удалось" << endl;
+        return false;
+    }
+}
+bool Omega::Load()
+{
+    ifstream loadSystem("save.bin", ios::binary);
+    if (loadSystem.is_open())
+    {
+        if (!Npc::Load())
+        {
+            cout << "Биометрические данные не совпадают.\nЛичность не подтверждена" << endl;
+            return false;
+        }
+        loadSystem.read(reinterpret_cast<char*>(&intellect), sizeof(intellect));
+        loadSystem.close();
+        return true;
+    }
+    else
+    {
+        cout << "Биометрические данные не совпадают.\nЛичность не подтверждена" << endl;
+        return false;
+    }
+}
+Omega::Omega()
+{
+    name = "Омега";
+    health = 1100;
+    damage = 300;
+}
+Omega::Omega(string name, unsigned int health, float damage)
+{
+    cout << "конструктор омеги" << endl;
+    this->name = name;
+    this->health = health;
+    this->damage = damage;
+}
+void Omega::GetArts()
+{
+    cout << name << " взял в руки ";
+}
+void Omega::GetInfo() //полиморфизм (перегрузка для метода)
+{
+    Npc::GetInfo();
+    cout << "Интеллект - " << intellect << endl;
+    cout << "Доступные Ореолы - ";
+   
+
+}
+void Omega::GetArtInfo()
+{
+    for (int i = 0; i < 5; i++)
+    {
+        cout << i + 1 << " Искусство: " << arts[i].GetName()
+            << ", Урон: " << arts[i].GetDamage()
+            << ", Цена: " << arts[i].GetPrice() << endl;
+    }
+
+}
+
+void Omega::Create()
+{
+    cout << "Вы создали омегу" << endl;
+    cout << "Введите имя персонажа\t";
+    cin >> name;
+    GetInfo();
+
+}
+bool Omega::operator == (const Omega& omega) const
+{
+    return ((omega.damage == this->damage) && (omega.health == this->health)
+        && (omega.intellect == this->intellect));
+}
+void Omega::operator = (Npc npc)
 {
     this->name = npc.GetName();
     this->name = npc.GetHealth();
@@ -100,36 +216,98 @@ void Warrior::operator = (Npc npc)
     this->name = npc.GetLvl();
 }
 
-//деструктор - метод, который вызывается автоматически при высвобождении памяти
-//при окончании работы с экземпляром класса (нельзя вызвать вручную)
-Warrior::~Warrior() //деструктор всегда без аргументов
+Omega::~Omega() //деструктор всегда без аргументов
 {
-    cout << name << " пал смертью храбрых" << endl;
+    cout << name << "\nПоглощен Катастрофой" << endl;
 }
 
-void Paladin::Create()
+Juggernaut::Juggernaut()
 {
-    cout << "" <<
+    name = "Джаггернаут";
+    health = 2500;
+    damage = 150;
+    strenght = 650;
+    intellect = 250;
 }
-
-unsigned short Wizard::Spell:CastSpell()
+void Juggernaut::GetInfo()
 {
-    cout << "Вы применили " << name << " на противнике" << endl;
-    return damage;
-}
-
-void Wizard::GetInfo()
-{
-    Npc::GetInfo();
+    cout << "Имя - " << name << endl;
+    cout << "Здоровье - " << health << endl;
+    cout << "Урон - " << damage << endl;
+    cout << "Сила - " << strenght << endl;
     cout << "Интеллект - " << intellect << endl;
-    cout << "Доступные заклинания в книге заклинаний - ";
-    for (int i = 0; i < 5; i++)
+}
+
+void Juggernaut::Create()
+{
+    cout << "Вы создали джаггернаута" << endl;
+    cout << "Введите имя персонажа\t";
+    cin >> name;
+    GetInfo();
+    GetWeapons();  
+}
+
+bool Juggernaut::operator == (const Juggernaut& juggernaut) const
+{
+    return (juggernaut.damage == this->damage) &&
+        (juggernaut.health == this->health) &&
+        (juggernaut.strenght == this->strenght) &&
+        (juggernaut.intellect == this->intellect);
+}
+
+Juggernaut& Juggernaut::operator = (const Npc& npc)
+{
+    if (this != &npc)
     {
-        cout << i + 1 << " заклинание:\n";
-        for (int j = 0; j < 5; j++)
-        {
-            cout << spells[i][j] << endl;
-        }
-        cout << endl;
+        this->name = npc.GetName();
+        this->health = npc.GetHealth();
+        this->damage = npc.GetDamage();
+        this->lvl = npc.GetLvl();
+        this->strenght = 410;  
+        this->intellect = 350; 
     }
-};
+    return *this;
+}
+bool Juggernaut::Save()
+{
+    ofstream saveSystem("save.bin", ios::binary);
+    if (saveSystem.is_open())
+    {
+        if (!Npc::Save())
+        {
+            cout << "Сохранение не удалось" << endl;
+            return false;
+        }
+        saveSystem.write(reinterpret_cast<const char*>(&intellect), sizeof(intellect));
+        saveSystem.write(reinterpret_cast<const char*>(&strenght), sizeof(strenght));
+        saveSystem.close();
+        return true;
+    }
+    else
+    {
+        cout << "Сохранение не удалось" << endl;
+        return false;
+    }
+}
+
+bool Juggernaut::Load()
+{
+    ifstream loadSystem("save.bin", ios::binary);
+    if (loadSystem.is_open())
+    {
+        if (!Npc::Load())
+        {
+            cout << "Биометрические данные не совпадают.\nЛичность не подтверждена" << endl;
+            return false;
+        }
+        loadSystem.read(reinterpret_cast<char*>(&intellect), sizeof(intellect));
+        loadSystem.read(reinterpret_cast<char*>(&strenght), sizeof(strenght));
+        loadSystem.close();
+        return true;
+    }
+    else
+    {
+        cout << "Биометрические данные не совпадают.\nЛичность не подтверждена" << endl;
+        return false;
+    }
+}
