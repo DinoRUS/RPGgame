@@ -1,22 +1,22 @@
 #include "mainClass.h"
 
-string Npc::GetName()
+string Npc::GetName() const
 {
     return name;
 }
-unsigned int Npc::GetHealth()
+unsigned int Npc::GetHealth()const
 {
     return health;
 }
-float Npc::GetDamage()
+float Npc::GetDamage()const
 {
     return damage;
 }
-unsigned int Npc::GetLvl()
+unsigned int Npc::GetLvl()const
 {
     return lvl;
 }
-void Npc::GetInfo() //метод класса
+void Npc::GetInfo() const
 {
     cout << "Имя - " << name << endl;
     cout << "Здоровье - " << health << endl;
@@ -24,7 +24,6 @@ void Npc::GetInfo() //метод класса
 }
 bool Npc::Save()
 {
-
     ofstream saveSystem("save.bin", ios::binary);
     if (saveSystem.is_open())
     {
@@ -37,41 +36,50 @@ bool Npc::Save()
     }
     else
     {
-        cout << "сохранение не удалось" << endl;
+        cout << "Досье не обнаружено. Файл контракта утерян или уничтожен" << endl;
         return false;
     }
     saveSystem.close();
 };
-Npc Npc::Load()
+bool Npc::Load()
 {
     ifstream loadSystem("save.bin", ios::binary);
-    Npc npc; //временное хранилище для считывания данных из файла
     if (loadSystem.is_open())
     {
-        loadSystem.read(reinterpret_cast<char*>(&npc.name), sizeof(npc.name));
-        loadSystem.read(reinterpret_cast<char*>(&npc.health), sizeof(npc.health));
-        loadSystem.read(reinterpret_cast<char*>(&npc.damage), sizeof(npc.damage));
-        loadSystem.read(reinterpret_cast<char*>(&npc.lvl), sizeof(npc.lvl));
+        size_t nameLenght;
+        loadSystem.read(reinterpret_cast<char*>(&nameLenght), sizeof(nameLenght));
+        char* buffer = new char[nameLenght + 1];
+        loadSystem.read(buffer, nameLenght);
+        buffer[nameLenght] = '\0';
+        name = string(buffer);
+        delete[] buffer;
+
+        loadSystem.read(reinterpret_cast<char*>(&health), sizeof(health));
+        loadSystem.read(reinterpret_cast<char*>(&damage), sizeof(damage));
+        loadSystem.read(reinterpret_cast<char*>(&lvl), sizeof(lvl));
+        return loadSystem.good();
     }
     else
     {
-        cout << "связь с базой нарушена\nПамять утерена" << endl;
-        return npc;
+        cout << "Биометрические данные не совпадают.\nЛичность не подтверждена" << endl;
+        return false;
     }
     loadSystem.close();
-    return npc;
-
 
 };
-void Player::Create(Npc* player)
+
+void Wayfarer::Create(unique_ptr<Npc> wayfarer)
 {
-    player->Create();
+    currentCharacter = move(wayfarer);
+    currentCharacter->Create();
 }
-void Player::Save(Npc* player)
+void Wayfarer::Create()
 {
-    player->Save();
+    if (currentCharacter != nullptr)
+        currentCharacter->Create();
 }
-void Player::Load(Npc* player)
+
+Npc* Wayfarer::GetCharacter()
 {
-    player->Load();
+    return currentCharacter.get();
 }
