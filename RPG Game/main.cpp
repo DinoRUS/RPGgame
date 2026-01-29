@@ -1,276 +1,267 @@
 #include <iostream>
-#include "gameClasses.h"
-#include "mainClass.h"
-#include <Windows.h>
-#include "evil.h"
-#include <fstream>
-using namespace std; 
+#include "windows.h"
 
-unsigned short TestChoise(unsigned short maxChoise, string text)
-{
-    unsigned short choise = 1;
-    cin >> choise;
-    while (choise > maxChoise || choise < 1)
-    {
-        cout << text << endl;
-        cin >> choise;
-    }
-    return choise;
-};
-
-class Product
-{
-public: Product() = default;
-};
-
-class Bread : Product
-{
-public: Bread() = default;
-};
-
-class Chips : Product
-{
-public: Chips() = default;
-};
-
-class Creator
-{
-public: 
-    Creator() = default;
-    virtual Product FactoryMethod() { return Product(); };
-};
-
-class BreadCreator : Creator
-{
-public:
-    BreadCreator() = default;
-    Product FactoryMethod() override { return Bread(); };
-};
-
-class ChipsCreator : Creator
-{
-public: 
-    ChipsCreator() = default;
-    Product FactoryMethod() override { return Chips(); };
-};
-
-enum class ValueQuality
-{
-    мусор, обычное, редкое, мифическое, легендарное
-};
+using namespace std;
 
 //модификаторы доступа:
-// private - приватный, запрещает доступ к свойствам и классам
-//           за пределами самого класса
-// protected - защищенный, можно передавать свойства и методы
-//        в классы наследники, но все еще нельзя использовать
-//        в основном потоке программы
+// private - приватный, запрещает доступ к свойствам и классам за пределами самого класса
+// protected - защищенный, можно передавать свойства и методы в классы наследники, но не использовать в основном потоке программы
 // public - публичный, общедоступный, можно использовать везде
+
 //базовый класс - абстрактный (класс у которого все методы виртуальные)
-struct Treasure // приват но по умл
+class Npc
 {
-    string name{ "добыча" };
-    ValueQuality quiality = ValueQuality::мифическое;
-    unsigned int price{ 0 };
-    Treasure(ValueQuality quality)
+protected: //модификатор 0 защищенный (дает доступ внутри класса родителя и наследника), но все еще не дает доступ в основном потоке программы
+    string name{ "персонаж" };
+    unsigned int health{ 10 };
+    float damage{ 5 };
+    unsigned short lvl{ 1 };
+public: //публичный модификатор доступ (использовать метод можно в любом месте)
+    virtual void GetInfo() //метод класса
     {
-        switch (quality)
+        cout << "Имя - " << name << endl;
+        cout << "Здоровье - " << health << endl;
+        cout << "Урон - " << damage << endl;
+    }
+    virtual void Create() {};
+};
+
+//наследование - использование доступных свойств и методов класса родителям (parent), классом наследником(child)
+class Warrior : public virtual Npc //наследование с модификатором доступа public
+{
+protected: //модификатор 0 (приватный - защищенный, доступ к полям, только внутри класса)
+    unsigned short strenght{ 31 };
+    string weapons[4] = { "кастет", "дубинка", "клинок", "меч" };
+public:
+    //конструктор - метод, который вызывается в момент создания экземпляра класса (вручную вызвать в основном потоке программы не можем)
+
+    Warrior() //конструктор по умолчанию, когда нет аргументов
+    {
+        name = "воин";
+        health = 50;
+        damage = 20;
+    }
+    //кастомный конструктор
+    Warrior(string name, unsigned int health, float damage)
+    {
+        cout << "конструктор война" << endl;
+        this->name = name;
+        this->health = health;
+        this->damage = damage;
+    }
+
+    void GetWeapons()
+    {
+        cout << name << " взял в руки " << weapons[lvl - 1];
+    }
+    void GetInfo() override //полиморфизм (перегрузка для метода)
+    {
+        Npc::GetInfo();
+        cout << "Сила - " << strenght << endl;
+        cout << "Доступное оружие - ";
+        for (int i = 0; i < lvl; i++)
         {
-        case ValueQuality::мусор:
-            cout << "качесвто плохое\n";
-            break;
+            cout << weapons[i] << endl;
         }
-        switch (quality)
-        {
-        case ValueQuality::обычное:
-            cout << "качество среднее\n";
-            break;
-        }
-        switch (quality)
-        {
-        case ValueQuality::редкое:
-            cout << "качество хорошее\n";
-            break;
-        }
-        switch (quality)
-        {
-        case ValueQuality::мифическое:
-            cout << "качество отличное\n";
-            break;
-        }
-        switch (quality)
-        {
-        case ValueQuality::легендарное:
-            cout << "качество замечательное\n";
-            break;
-        default:
-            break;
-        }
+    }
+    void Create() override
+    {
+        cout << "Вы создали война" << endl;
+        cout << "Введите имя персонажа\t";
+        cin >> name;
+        GetInfo();
+        GetWeapons();
+    }
+    //перегрузка операторов
+    //перегрузка оператора сравнения (==)
+    bool operator == (const Warrior& warrior) const
+    {
+        return ((warrior.damage == this->damage) && (warrior.health == this->health)
+            && (warrior.strenght == this->strenght));
+    }
+    //деструктор - метод, который вызывается автоматически при высвобождении памяти
+    //при окончании работы с экземпляром класса (нельзя вызвать вручную)
+
+    ~Warrior() //деструктор всегда без аргументов
+    {
+        cout << endl;
+        cout << name << " пал смертью храбрых" << endl;
     }
 };
 
-struct Cloth : Treasure //
+//virtual - создает виртуализацию методов, классов при этом сам класс повторно не создается
+
+class Wizard : public virtual Npc
 {
-    Cloth(ValueQuality quality) : Treasure(quality) {};
-    string valueSite[5]{ "обувь","перчатки","шлем","нагрудник","пояс" };
-    string site{ NULL };
-    unsigned short armor{ 1 };
-
-    Cloth cloth(ValueQuality::мифическое);
-    cloth.armor = 10;
-    cloth.site = cloth.valueSite[2];
-    cloth.name = "Шлем властителя подземелий";
-    cloth.price = 50;
-    cout << cloth.name << '\n' << cloth.valueSite << '\n' << cloth.armor << '\n' << cloth.price << '\n';
-};
-
-enum class CharacterType
+protected:
+    unsigned short intellect = 27;
+    string spell[4] = { "ослепление", "огненная стрела", "огненный шар", "токсичныый дождь" };
+public:
+    Wizard()
     {
-    UNKOWN = 0,
-    WARRIOR,
-    WIZZARD,
-    PALADIN
-    };
-enum class EnemyType
-    {
-
-    };
-
-unsigned short TestChoice(unsigned short maxChoice, string text)
-    {
-
+        name = "волшебник";
+        health = 30;
+        damage = 25;
     }
-
-unique_ptr<Npc> CreateCharacter(CharacterType type)
-{
-    switch (type)
+    Wizard(string name, unsigned int health, float damage)
     {
-    case CharacterType::UNKOWN:
-        return make_unique<Npc>();
-        break;
-    case CharacterType::WARRIOR:
-        return make_unique<Warrior>();
-        break;
-    case CharacterType::WIZZARD:
-        return make_unique<Wizard>();
-        break;
-    case CharacterType::PALADIN:
-        return make_unique<Paladin>();
-        break;
-    default:
-        invalid_argument("Неизвестный тип персонавжа");
-            break;
-    };
+        cout << "конструктор волшебника" << endl;
+        this->name = name;
+        this->health = health;
+        this->damage = damage;
+    }
+    void GetInfo() override //полиморфизм (перегрузка для метода)
+    {
+        Npc::GetInfo();
+        cout << "Интеллект - " << intellect << endl;
+        cout << "Доступные заклинания в книге заклинаний - ";
+        for (int i = 0; i < lvl; i++)
+        {
+            cout << spell[i] << endl;
+        }
+    }
+    void CastSpell()
+    {
+        cout << name << " применяет " << spell[lvl - 1] << endl;
+    }
+    void Create() override
+    {
+        cout << "Вы создали волшебника" << endl;
+        cout << "Введите имя персонажа\t";
+        cin >> name;
+        GetInfo();
+        CastSpell();
+    }
+    Wizard operator + (const Wizard& wizard) const
+    {
+        return Wizard(this->name, (this->health + wizard.health), (this->damage + wizard.damage));
+    }
+    ~Wizard() //деструктор всегда без аргументов
+    {
+        cout << endl;
+        cout << name << " испустил дух" << endl;
+    }
 };
-/*
-class Treasure // приват но по умл
+
+//множественное наследование
+class Paladin : public Warrior, public Wizard
+//следующий родительственный класс добавляется через запятую
 {
 public:
-    string name{ "добыча" };
-    string valueQuality[5]{ "мусор", "обычное", "редкое", "мифическое", "легендарное" };
-    string quality = valueQuality[0];
-    unsigned int price{ 0 };
+    Paladin()
+    {
+        name = "паладин";
+        health = 75;
+        damage = 10;
+        strenght = 30;
+    }
+    void GetInfo() override
+    {
+        Warrior::GetInfo();
+        cout << "Интеллект - " << intellect << endl;
+        cout << "Доступные заклинания - ";
+        for (int i = 0; i < lvl; i++)
+        {
+            cout << spell[i] << endl;
+        }
+    }
+    void Create() override
+    {
+        cout << "Вы создали паладина" << endl;
+        cout << "Введите имя персонажа\t";
+        cin >> name;
+        GetInfo();
+        CastSpell();
+        GetWeapons();
+    }
 };
-class Cloth : Treasure //
+
+class Player
 {
-    string valueSite[5]{ "обувь","перчатки","шлем","нагрудник","пояс" };
-    string site{ NULL };
-    unsigned short armor{ 1 };
+public:
+    void Create(Npc* player)
+    {
+        player->Create();
+    }
 };
-*/
+
+unsigned short GetChoice(unsigned short first, unsigned short last);
+
 int main()
 {
-    setlocale(LC_ALL,"Rus")
+    setlocale(LC_ALL, "Rus");
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
-    /*Treasure treasure;
-    treasure.name = "древняя тарелка";
-    treasure.price = 30;
-    treasure.quality = treasure.valueQuality[3];
-    cout << treasure.name << '\n' << treasure.price << '\n' << treasure.quality << '\n';
-*/
 
     Warrior* warrior = new Warrior();
     Warrior* warrior2 = new Warrior();
+    
     cout << (*warrior == *warrior2) << endl;
 
     Wizard* wizard = new Wizard();
+    Wizard* wizard2 = new Wizard();
+    Wizard* megaWizard = new Wizard();
+   
+    *megaWizard = *wizard + *wizard2;
+    megaWizard->GetInfo();
+
     Paladin* paladin = new Paladin();
-    
-    Player* player = new Player()
+    Player* player = new Player();
 
-    cout << "Привет, путник\nПрисядь у костра и расскажи о себе\n";
+    cout << "Привет, странник\nПрисядь у костра и расскажи о себе\n";
     cout << "Ты впервые тут? (1 - новый персонаж, 2 - загрузить)\n";
-    unsigned short choise = 1;
-    cin >> choise;
-    while (choise > 2 || choise < 1)
+
+    unsigned short choice = GetChoice(1, 2); 
+
+    if (choice == 1)
     {
-        cout << "Наверное ты ошибся, повтори снова\n";
-        cin >> choise;
+        cout << "Расскажи о своих навыках\n1 - Воин\n2 - Волшебник\n3 - Паладин\n";
+        choice = GetChoice(1, 3); 
+        switch (choice)
+        {
+        case 1:
+            player->Create(warrior);
+            delete wizard;
+            delete paladin;
+            break;
+        case 2:
+            player->Create(wizard);
+            delete warrior;
+            delete paladin;
+            break;
+        case 3:
+            player->Create(paladin);
+            delete warrior;
+            delete wizard;
+            break;
+        }
     }
-    /*
-    unsigned short maxChoise = 3;
-    unsigned short TestChoise(unsigned short maxChoise, string text);
+    if (choice == 2)
     {
-        unsigned short choise = 1;
-        cin >> choise;
-        while (choise > maxChoise || choise < 1)
-        {
-            cout << "Наверное ты ошибся, повтори снова\n";
-            cin >> choise;
-        }
-        return choise;
-
-
-    };
-
-    */
-
-    if (choise == 1)
-    {
-        cout << "Расскажи о своих навыках\n\t1 - Воин\n\t2 - Волшебник\n\t3 - Паладин\n";
-
-        // тут уже будет вызвана ваша красивая функция
-        cin >> choise;
-        while (choise > 3 || choise < 1)
-        {
-            cout << "Такого еще не было в наших краях\nНе мог бы ты повторить\n";
-            cin >> choise;
-        }
-        if (TestChoise(2, "Наверное ты ошибся повтори снова"))
-        {
-            cout << "Расскажи о своих навыках\n\t1 - Воин\n\t2 - Волшебник\n\t3 - Паладине\n";
-            unique_ptr<Npc> character;
-            switch (TestChoice(3,"Такого не было в наших краях\nНе мог бы ты повторить"))
-            {
-            case 1:
-                character = CreateCharacter(CharacterType::WARRIOR);
-                break;
-            case 2:
-                character = CreateCharacter(CharacterType::WIZZARD);
-                break;
-            case 3:
-                character = CreateCharacter(CharacterType::PALADIN);
-                break;
-            }
-            player->Create(move(character));
-        }
-    else
-    {
-            ifstream loadSystem("save.txt", ios::binary);
-
-    }
-
-    cout << "сделаем остановку тут?\n\t1 - сохранить игру\n\t2 - продолжить\n";
-    cin >> choise;
-    if (choise == 1)
-    {
-        if (warrior != nullptr) player->Save(warrior);
-        if (wizard != nullptr) player->Save(wizard);
-        if (paladin != nullptr) player->Save(paladin);
+       
+        cout << "Загрузка персонажа..." << endl;
+        delete warrior;
+        delete warrior2;
+        delete wizard;
+        delete wizard2;
+        delete megaWizard;
+        delete paladin;
     }
 
 
-
+   
     return 0;
+}
+
+unsigned short GetChoice(unsigned short first, unsigned short last) 
+{
+    unsigned short choice;
+    cin >> choice;
+    while (choice < first || choice > last) {
+        cout << "Неверный ввод! Введите число от " << first << " до " << last;
+        cout << endl;
+        cin >> choice;
+    }
+    return choice;
+
 }
