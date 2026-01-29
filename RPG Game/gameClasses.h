@@ -2,7 +2,7 @@
 #include "mainClass.h"
 #include "string"
 
-class Sentinel : public virtual Npc
+class Nemesis : public virtual Npc
 {
 protected:  
     unsigned short strenght{ 430 };
